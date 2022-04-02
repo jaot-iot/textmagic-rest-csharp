@@ -25,7 +25,7 @@ namespace TextmagicRest.Tests
                 Content = json
             };
 
-            var deserializer = new JsonDeserializer();
+            var deserializer = new  JsonDeserializer();
             resp.Data = deserializer.Deserialize<T>(resp);
 
             var mock = new Mock<IRestClient>();

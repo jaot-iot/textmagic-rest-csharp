@@ -46,7 +46,7 @@ namespace TextmagicRest
 
         private const string _defaultUserAgent = "textmagic-rest-csharp/{0} (.NET {1}; {2})";
 
-        protected void _init(string username, string token, string baseUrl, int timeout) 
+        protected void _init(string username, string token, string baseUrl, int timeout)
         {
             Username = username;
             Token = token;
@@ -55,8 +55,8 @@ namespace TextmagicRest
             _client.BaseUrl = new Uri(baseUrl);
             _client.Timeout = timeout;
             _client.AddDefaultHeader("Accept-Charset", "utf-8");
-            _client.Authenticator = new TextmagicAuthenticator(Username, Token);
-            System.Reflection.AssemblyName assemblyName = new System.Reflection.AssemblyName(System.Reflection.Assembly.GetExecutingAssembly().FullName);            
+            _client.Authenticator = (IAuthenticator)new TextmagicAuthenticator(Username, Token);
+            System.Reflection.AssemblyName assemblyName = new System.Reflection.AssemblyName(System.Reflection.Assembly.GetExecutingAssembly().FullName);
             _client.UserAgent = String.Format(_defaultUserAgent, assemblyName.Version, Environment.Version.ToString(), Environment.OSVersion.ToString());
         }
 
