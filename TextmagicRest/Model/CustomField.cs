@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TextmagicRest.Model
 {
-    public class CustomField: BaseModel
+    public class CustomField : BaseModel
     {
         /// <summary>
         /// Custom field ID

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -23,12 +19,12 @@ namespace TextmagicRest.Model
         /// </summary>
         public int Id { get; set; }
 
-        [DeserializeAs(Name = "direction")]
+        [JsonPropertyName("direction")]
         public char DirectionChar { get; set; }
         /// <summary>
         /// Message direction
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public ChatMessageDirection Direction
         {
             get { return (ChatMessageDirection)DirectionChar; }
@@ -50,12 +46,12 @@ namespace TextmagicRest.Model
         /// </summary>
         public string Receiver { get; set; }
 
-        [DeserializeAs(Name = "status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Message delivery status
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public DeliveryStatus Status
         {
             get { return (DeliveryStatus)StatusChar; }

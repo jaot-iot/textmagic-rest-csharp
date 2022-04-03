@@ -1,13 +1,6 @@
-﻿using System;
+﻿using RestSharp;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
 using TextmagicRest.Model;
-using RestSharp.Validation;
 
 namespace TextmagicRest
 {
@@ -20,13 +13,14 @@ namespace TextmagicRest
         /// <returns></returns>
         public ContactList GetList(int id)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "lists/{id}";
             request.AddUrlSegment("id", id.ToString());
-
-            return Execute<ContactList>(request);
+            var response = Execute<ContactList>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -61,7 +55,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<ContactListsResult>(request);
+            var response = Execute<ContactListsResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -80,8 +76,9 @@ namespace TextmagicRest
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
             if (ids != null && ids.Length > 0) request.AddQueryParameter("ids", string.Join(",", ids));
             if (query != string.Empty) request.AddQueryParameter("query", query);
-
-            return Execute<ContactListsResult>(request);
+            var response = Execute<ContactListsResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -102,12 +99,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult CreateList(string name, bool? shared)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };
             request.Resource = "lists";
             request.AddParameter("name", name);
-            if (shared.HasValue) request.AddParameter("shared", (bool)shared? "1": "0");
-
-            return Execute<LinkResult>(request);
+            if (shared.HasValue) request.AddParameter("shared", (bool)shared ? "1" : "0");
+            var response = Execute<LinkResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -117,13 +115,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult UpdateList(ContactList list)
         {
-            var request = new RestRequest(Method.PUT);
+            var request = new RestRequest() { Method = Method.Put };
             request.Resource = "lists/{id}";
             request.AddUrlSegment("id", list.Id.ToString());
             request.AddParameter("name", list.Name);
-            request.AddParameter("shared", list.Shared? "1" : "0");
+            request.AddParameter("shared", list.Shared ? "1" : "0");
 
-            return Execute<LinkResult>(request);
+            var response = Execute<LinkResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -133,11 +133,12 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteList(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "lists/{id}";
             request.AddUrlSegment("id", id.ToString());
-
-            return Execute<DeleteResult>(request);
+            var response = Execute<DeleteResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -177,7 +178,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<ContactsResult>(request);
+            var response = Execute<ContactsResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -188,12 +191,14 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult AddContactsToList(int id, int[] contactIds)
         {
-            var request = new RestRequest(Method.PUT);
+            var request = new RestRequest() { Method = Method.Put };
             request.Resource = "lists/{id}/contacts";
             request.AddUrlSegment("id", id.ToString());
             if (contactIds != null && contactIds.Length > 0) request.AddParameter("contacts", string.Join(",", contactIds));
 
-            return Execute<LinkResult>(request);
+            var response = Execute<LinkResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>
@@ -221,12 +226,14 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteContactsFromList(int id, int[] contactIds)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "lists/{id}/contacts";
             request.AddUrlSegment("id", id.ToString());
             if (contactIds != null && contactIds.Length > 0) request.AddParameter("contacts", string.Join(",", contactIds));
 
-            return Execute<DeleteResult>(request);
+            var response = Execute<DeleteResult>(request);
+            response.Wait();
+            return response.Result;
         }
 
         /// <summary>

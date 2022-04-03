@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
+﻿using RestSharp;
 using TextmagicRest.Model;
-using RestSharp.Validation;
 
 namespace TextmagicRest
 {
@@ -20,13 +12,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public Template GetTemplate(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "templates/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<Template>(request);
+            var res = Execute<Template>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -61,7 +55,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<TemplatesResult>(request);
+            var res = Execute<TemplatesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -82,8 +78,10 @@ namespace TextmagicRest
             if (ids != null && ids.Length > 0) request.AddQueryParameter("ids", string.Join(",", ids));
             request.AddQueryParameter("name", name);
             request.AddQueryParameter("content", content);
-
-            return Execute<TemplatesResult>(request);
+            
+            var res = Execute<TemplatesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -93,11 +91,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteTemplate(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };  
             request.Resource = "templates/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -118,12 +118,14 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult CreateTemplate(string name, string content)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };  
             request.Resource = "templates";
             request.AddParameter("name", name);
             request.AddParameter("content", content);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -133,13 +135,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult UpdateTemplate(Template template)
         {
-            var request = new RestRequest(Method.PUT);
+            var request = new RestRequest() { Method = Method.Put };
             request.Resource = "templates/{id}";
             request.AddUrlSegment("id", template.Id.ToString());
             request.AddParameter("name", template.Name);
             request.AddParameter("content", template.Content);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
     }
 }

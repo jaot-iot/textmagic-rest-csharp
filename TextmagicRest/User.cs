@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
+﻿using RestSharp;
+using System;
 using TextmagicRest.Model;
-using RestSharp.Validation;
 
 namespace TextmagicRest
 {
@@ -33,7 +26,9 @@ namespace TextmagicRest
             request.Resource = "sources";
             if (!String.IsNullOrEmpty(country)) request.AddQueryParameter("country", country);
 
-            return Execute<SourcesResult>(request);
+            var res = Execute<SourcesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -68,7 +63,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<SenderIdsResult>(request);
+            var res = Execute<SenderIdsResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -78,13 +75,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public SenderId GetSenderId(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "senderids/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<SenderId>(request);
+            var res = Execute<SenderId>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -94,11 +93,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteSenderId(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "senderids/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -119,12 +120,14 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult CreateSenderId(string senderId, string explanation)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };
             request.Resource = "senderids";
             request.AddParameter("senderId", senderId);
             request.AddParameter("explanation", explanation);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -141,7 +144,9 @@ namespace TextmagicRest
             request.AddQueryParameter("country", country);
             if (!string.IsNullOrEmpty(prefix)) request.AddQueryParameter("prefix", prefix);
 
-            return Execute<AvailableNumbersResult>(request);
+            var res = Execute<AvailableNumbersResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -151,13 +156,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public DedicatedNumber GetDedicatedNumber(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "numbers/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DedicatedNumber>(request);
+            var res = Execute<DedicatedNumber>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -192,7 +199,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<DedicatedNumbersResult>(request);
+            var res = Execute<DedicatedNumbersResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -202,11 +211,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult CancelDedicatedNumber(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "numbers/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -228,13 +239,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult BuyDedicatedNumber(string phone, string country, string userId)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };
             request.Resource = "numbers";
             request.AddParameter("phone", phone);
             request.AddParameter("country", country);
             request.AddParameter("userId", userId);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -246,7 +259,9 @@ namespace TextmagicRest
             var request = new RestRequest();
             request.Resource = "user";
 
-            return Execute<User>(request);
+            var res = Execute<User>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -258,17 +273,19 @@ namespace TextmagicRest
         /// <returns></returns>
         public LinkResult UpdateUser(string firstName, string lastName, string company)
         {
-            Require.Argument("firstName", firstName);
-            Require.Argument("lastName", lastName);
-            Require.Argument("company", company);
+            //Require.Argument("firstName", firstName);
+            //Require.Argument("lastName", lastName);
+            //Require.Argument("company", company);
 
-            var request = new RestRequest(Method.PUT);
+            var request = new RestRequest() { Method = Method.Put };
             request.Resource = "user";
             request.AddParameter("firstName", firstName);
             request.AddParameter("lastName", lastName);
             request.AddParameter("company", company);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -304,7 +321,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<InvoicesResult>(request);
+            var res = Execute<InvoicesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -336,7 +355,9 @@ namespace TextmagicRest
             request.AddQueryParameter("start", DateTimeToTimestamp(start).ToString());
             request.AddQueryParameter("end", DateTimeToTimestamp(start).ToString());
 
-            return Execute<MessagingStatsResult>(request);
+            var res = Execute<MessagingStatsResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -357,8 +378,10 @@ namespace TextmagicRest
             request.AddQueryParameter("start", DateTimeToTimestamp(start).ToString());
             request.AddQueryParameter("end", DateTimeToTimestamp(end).ToString());
 
-            return Execute<SpendingStatsResult>(request);
-        }       
+            var res = Execute<SpendingStatsResult>(request);
+            res.Wait();
+            return res.Result;
+        }
 
         /// <summary>
         /// Get a single subaccount.
@@ -367,13 +390,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public User GetSingleSubaccount(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "subaccounts/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<User>(request);
+            var res = Execute<User>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -383,14 +408,16 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult CloseSubaccount(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "subaccounts/{id}";
             request.AddUrlSegment("id", id.ToString());
-            request.Method = Method.DELETE;
+            request.Method = Method.Delete;
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -407,7 +434,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<UserResults>(request);
+            var res = Execute<UserResults>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -420,12 +449,14 @@ namespace TextmagicRest
         {
             var request = new RestRequest();
             request.Resource = "subaccounts";
-            request.Method = Method.POST;
+            request.Method = Method.Post;
 
             request.AddQueryParameter("email", email);
             request.AddQueryParameter("role", role);
 
-            return Execute<LinkResult>(request);
+            var res = Execute<LinkResult>(request);
+            res.Wait();
+            return res.Result;
         }
     }
 }

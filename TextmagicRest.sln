@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextmagicRest", "TextmagicRest\TextmagicRest.csproj", "{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}"
 EndProject
@@ -23,24 +23,24 @@ Global
 		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Debug|x64.Build.0 = Debug|x64
 		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|x64.ActiveCfg = Release|x64
-		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|x64.Build.0 = Release|x64
+		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|x64.ActiveCfg = Release|Any CPU
+		{2AA7CF5D-8E4C-4C6D-8871-26AFBE6C078F}.Release|x64.Build.0 = Release|Any CPU
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Debug|x64.ActiveCfg = Debug|x64
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Debug|x64.Build.0 = Debug|x64
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|x64.ActiveCfg = Release|x64
-		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|x64.Build.0 = Release|x64
+		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|x64.ActiveCfg = Release|Any CPU
+		{72F18B6C-B09D-4D98-9633-1AED0DBF5EC2}.Release|x64.Build.0 = Release|Any CPU
 		{2072E259-422B-4F76-A874-01A50079CF67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2072E259-422B-4F76-A874-01A50079CF67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2072E259-422B-4F76-A874-01A50079CF67}.Debug|x64.ActiveCfg = Debug|x64
 		{2072E259-422B-4F76-A874-01A50079CF67}.Debug|x64.Build.0 = Debug|x64
 		{2072E259-422B-4F76-A874-01A50079CF67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2072E259-422B-4F76-A874-01A50079CF67}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2072E259-422B-4F76-A874-01A50079CF67}.Release|x64.ActiveCfg = Release|x64
-		{2072E259-422B-4F76-A874-01A50079CF67}.Release|x64.Build.0 = Release|x64
+		{2072E259-422B-4F76-A874-01A50079CF67}.Release|x64.ActiveCfg = Release|Any CPU
+		{2072E259-422B-4F76-A874-01A50079CF67}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+﻿using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -24,7 +19,7 @@ namespace TextmagicRest.Model
         /// <summary>
         /// Alphanumeric Sender ID itself
         /// </summary>
-        [DeserializeAs(Name = "senderId")]
+        [JsonPropertyName("senderId")]
         public string Name { get; set; }
 
         /// <summary>
@@ -32,12 +27,12 @@ namespace TextmagicRest.Model
         /// </summary>
         public User User { get; set; }
 
-        [DeserializeAs(Name = "status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Dedicated number status
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public SenderIdStatus Status
         {
             get { return (SenderIdStatus)StatusChar; }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RestSharp;
 using RestSharp.Authenticators;
-using RestSharp;
+using System.Threading.Tasks;
 
 namespace TextmagicRest
 {
@@ -20,10 +16,11 @@ namespace TextmagicRest
             Token = token;
         }
 
-        public void Authenticate(IRestClient client, IRestRequest request)
+        public ValueTask Authenticate(RestClient client, RestRequest request)
         {
             client.AddDefaultHeader("X-TM-Username", Username);
             client.AddDefaultHeader("X-TM-Key", Token);
+            return new ValueTask(Task.FromResult(client));
         }
     }
 }

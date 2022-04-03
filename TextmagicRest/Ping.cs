@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
+﻿using RestSharp;
 using TextmagicRest.Model;
-using RestSharp.Validation;
 
 namespace TextmagicRest
 {
@@ -22,7 +14,9 @@ namespace TextmagicRest
             var request = new RestRequest();
             request.Resource = "ping";
 
-            return Execute<PingResult>(request);
+            var res = Execute<PingResult>(request);
+            res.Wait();
+            return res.Result;
         }
     }
 }

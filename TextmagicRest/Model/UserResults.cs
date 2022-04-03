@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
     /// <summary>
     /// List of Subaccounts
     /// </summary>
-    public class UserResults: BaseModelList
+    public class UserResults : BaseModelList
     {
-        [DeserializeAs(Name = "resources")]
+        [JsonPropertyName("resources")]
         public List<User> Subaccounts { get; set; }
     }
 }

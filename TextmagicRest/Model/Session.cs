@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -13,13 +9,13 @@ namespace TextmagicRest.Model
         WebApp = 'O',
         Tmm = 'T',
         EmailToSms = 'E',
-        DistributionList = 'X'        
+        DistributionList = 'X'
     }
 
     /// <summary>
     /// Message sending session
     /// </summary>
-    public class Session: BaseModel
+    public class Session : BaseModel
     {
         /// <summary>
         /// Session ID
@@ -36,16 +32,16 @@ namespace TextmagicRest.Model
         /// </summary>
         public string Text { get; set; }
 
-        [DeserializeAs(Name="source")]
+        [JsonPropertyName("source")]
         public char SourceChar { get; set; }
         /// <summary>
         /// Session sending source
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
-        public SendingSource Source 
+        [JsonPropertyName("fake-unused-name")]
+        public SendingSource Source
         {
             get { return (SendingSource)SourceChar; }
-            set { SourceChar = value.ToString()[0]; } 
+            set { SourceChar = value.ToString()[0]; }
         }
 
         /// <summary>

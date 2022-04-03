@@ -1,4 +1,5 @@
-﻿using RestSharp.Deserializers;
+﻿using System.Text.Json.Serialization;
+
 
 namespace TextmagicRest.Model
 {
@@ -25,7 +26,7 @@ namespace TextmagicRest.Model
         /// <summary>
         /// Timezone name (probably what you need to display)
         /// </summary>
-        [DeserializeAs(Name = "timezone")]
+        [JsonPropertyName("timezone")]
         public string Name { get; set; }
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Moq;
 using RestSharp;
 using System.Net;
-using Moq;
-using RestSharp.Deserializers;
+using System.Text.Json;
 
 namespace TextmagicRest.Tests
 {
@@ -15,21 +10,20 @@ namespace TextmagicRest.Tests
         public static string Username = "csharp-test-username";
         public static string Token = "csharp-test-token";
 
-        public static IRestClient CreateClient<T>(string json, ResponseStatus? responseStatus, HttpStatusCode? statusCode) where T: new()
+        public static RestClient CreateClient<T>(string json, ResponseStatus? responseStatus, HttpStatusCode? statusCode) where T : new()
         {
             var resp = new RestResponse<T>()
             {
                 ContentType = "application/json",
-                ResponseStatus = responseStatus.HasValue? (ResponseStatus)responseStatus: RestSharp.ResponseStatus.Completed,
-                StatusCode = statusCode.HasValue? (HttpStatusCode)statusCode: HttpStatusCode.OK,
+                ResponseStatus = responseStatus.HasValue ? (ResponseStatus)responseStatus : RestSharp.ResponseStatus.Completed,
+                StatusCode = statusCode.HasValue ? (HttpStatusCode)statusCode : HttpStatusCode.OK,
                 Content = json
             };
 
-            var deserializer = new  JsonDeserializer();
-            resp.Data = deserializer.Deserialize<T>(resp);
+            resp.Data = JsonSerializer.Deserialize<T>(resp);
 
-            var mock = new Mock<IRestClient>();
-            mock.Setup(x => x.Execute<T>(It.IsAny<IRestRequest>()))
+            var mock = new Mock<RestClient>();
+            mock.Setup(x =>  x.ExecuteAsync<T>(It.IsAny<RestRequest>()).GetAwaiter().GetResult())
                 .Returns(resp);
 
             return mock.Object;

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace TextmagicRest.Model
 {
@@ -18,23 +17,23 @@ namespace TextmagicRest.Model
         Contact,
         ContactList,
         CustomField
-    };      
+    };
 
-    public class LinkResult: BaseModel
+    public class LinkResult : BaseModel
     {
         private string href;
         /// <summary>
         /// Link to a newly created/updated resource
         /// </summary>
-        public string Href 
+        public string Href
         {
             get { return href; }
-            set 
+            set
             {
                 href = value;
 
                 // Get linked resource class by returned href
-                Dictionary<string, ResourceClass> relations = new Dictionary<string, ResourceClass>() 
+                Dictionary<string, ResourceClass> relations = new Dictionary<string, ResourceClass>()
                 {
                     { "messages", ResourceClass.Message },
                     { "bulks", ResourceClass.BulkSession },
@@ -64,7 +63,7 @@ namespace TextmagicRest.Model
 
                     ResourceClass = resourceClass;
                 }
-            } 
+            }
         }
 
         /// <summary>

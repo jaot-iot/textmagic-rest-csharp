@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
+﻿using RestSharp;
+using System;
 using TextmagicRest.Model;
-using RestSharp.Validation;
-using System.Text.RegularExpressions;
 
 namespace TextmagicRest
 {
@@ -21,13 +13,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public Message GetMessage(int id)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "messages/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<Message>(request);
+            var res = Execute<Message>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -48,7 +42,7 @@ namespace TextmagicRest
         {
             return GetMessages(page, null);
         }
-        
+
         /// <summary>
         /// Get all user outbound messages.
         /// </summary>
@@ -62,7 +56,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<MessagesResult>(request);
+            var res = Execute<MessagesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -84,7 +80,10 @@ namespace TextmagicRest
             if (ids != null && ids.Length > 0) request.AddQueryParameter("ids", string.Join(",", ids));
             if (query != string.Empty) request.AddQueryParameter("query", query);
 
-            return Execute<MessagesResult>(request);
+            var res = Execute<MessagesResult>(request);
+            res.Wait();
+            return res.Result;
+
         }
 
         /// <summary>
@@ -94,11 +93,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteMessage(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "messages/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -118,11 +119,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public SendingResult SendMessage(SendingOptions options)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };
             request = _makeSendingRequest(request, options);
 
-            return Execute<SendingResult>(request);
-        }        
+            var res = Execute<SendingResult>(request);
+            res.Wait();
+            return res.Result;
+        }
 
         /// <summary>
         /// Convert SendingOptions to RestRequest parameters
@@ -190,13 +193,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public BulkSession GetBulkSessionStatus(int id)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "bulks/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<BulkSession>(request);
+            var res = Execute<BulkSession>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -206,13 +211,16 @@ namespace TextmagicRest
         /// <returns></returns>
         public Session GetSession(int id)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "sessions/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<Session>(request);
+            // return Execute<Session>(request);
+            var res = Execute<Session>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -222,7 +230,7 @@ namespace TextmagicRest
         /// <returns></returns>
         public MessagesResult GetSessionMessages(int id, int? page, int? limit)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "sessions/{id}/messages";
@@ -230,7 +238,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<MessagesResult>(request);
+            var res = Execute<MessagesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -240,11 +250,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteSession(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "sessions/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -264,13 +276,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public Schedule GetSchedule(int id)
         {
-            Require.Argument("id", id);
+            ////Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "schedules/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<Schedule>(request);
+            var res = Execute<Schedule>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -305,7 +319,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<SchedulesResult>(request);
+            var res = Execute<SchedulesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -315,11 +331,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteSchedule(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "schedules/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -339,13 +357,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public Reply GetReply(int id)
         {
-            Require.Argument("id", id);
+            //Require.Argument("id", id);
 
             var request = new RestRequest();
             request.Resource = "replies/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<Reply>(request);
+            var res = Execute<Reply>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -380,7 +400,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<RepliesResult>(request);
+            var res = Execute<RepliesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -390,11 +412,13 @@ namespace TextmagicRest
         /// <returns></returns>
         public DeleteResult DeleteReply(int id)
         {
-            var request = new RestRequest(Method.DELETE);
+            var request = new RestRequest() { Method = Method.Delete };
             request.Resource = "replies/{id}";
             request.AddUrlSegment("id", id.ToString());
 
-            return Execute<DeleteResult>(request);
+            var res = Execute<DeleteResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -424,7 +448,9 @@ namespace TextmagicRest
             if (ids != null && ids.Length > 0) request.AddQueryParameter("ids", string.Join(",", ids));
             if (query != string.Empty) request.AddQueryParameter("query", query);
 
-            return Execute<RepliesResult>(request);
+            var res = Execute<RepliesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -434,13 +460,15 @@ namespace TextmagicRest
         /// <returns></returns>
         public Pricing GetPrice(SendingOptions options)
         {
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest() { Method = Method.Post };
             request = _makeSendingRequest(request, options);
-            request.Method = Method.GET;
+            request.Method = Method.Get;
             request.Resource = "messages/price";
             request.AddParameter("dummy", "1");
 
-            return Execute<Pricing>(request);
+            var res = Execute<Pricing>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -475,7 +503,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<ChatsResult>(request);
+            var res = Execute<ChatsResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -514,7 +544,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<ChatMessagesResult>(request);
+            var res = Execute<ChatMessagesResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -550,7 +582,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<BulkSessionsResult>(request);
+            var res = Execute<BulkSessionsResult>(request);
+            res.Wait();
+            return res.Result;
         }
 
         /// <summary>
@@ -586,7 +620,9 @@ namespace TextmagicRest
             if (page.HasValue) request.AddQueryParameter("page", page.ToString());
             if (limit.HasValue) request.AddQueryParameter("limit", limit.ToString());
 
-            return Execute<SessionsResult>(request);
+            var res = Execute<SessionsResult>(request);
+            res.Wait();
+            return res.Result;
         }
     }
 }

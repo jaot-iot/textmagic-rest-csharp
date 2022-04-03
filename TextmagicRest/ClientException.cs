@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
 
 namespace TextmagicRest
 {
     /// <summary>
     /// TextMagic REST API exception class
     /// </summary>  
-    public class ClientException: Exception
+    public class ClientException : Exception
     {
         /// <summary>
         /// HTTP code

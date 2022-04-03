@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TextmagicRest.Model
+﻿namespace TextmagicRest.Model
 {
-    public class BaseModelList: BaseModel
+    public class BaseModelList : BaseModel
     {
         /// <summary>
         /// Current page number

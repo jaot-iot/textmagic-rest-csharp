@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -18,19 +14,19 @@ namespace TextmagicRest.Model
     /// <summary>
     /// Bulk sending session class
     /// </summary>
-    public class BulkSession: BaseModel
+    public class BulkSession : BaseModel
     {
         /// <summary>
         /// Bulk session ID
         /// </summary>
         public int Id { get; set; }
 
-        [DeserializeAs(Name = "status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Bulk session status
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public BulkSessionStatus Status
         {
             get { return (BulkSessionStatus)StatusChar; }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TextmagicRest.Model
 {
     /// <summary>
     /// Pricing information
     /// </summary>
-    public class Pricing: BaseModel
+    public class Pricing : BaseModel
     {
         /// <summary>
         /// Total session cost

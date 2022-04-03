@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+﻿using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -25,7 +20,7 @@ namespace TextmagicRest.Model
         /// <summary>
         /// Single message price to this country
         /// </summary>
-        [DeserializeAs(Name="max")]
+        [JsonPropertyName("max")]
         public float Price { get; set; }
     }
 }

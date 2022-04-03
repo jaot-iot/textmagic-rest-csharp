@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -16,7 +12,7 @@ namespace TextmagicRest.Model
     /// <summary>
     /// Dedicated number class
     /// </summary>
-    public class DedicatedNumber: BaseModel
+    public class DedicatedNumber : BaseModel
     {
         /// <summary>
         /// Dedicated number ID
@@ -48,12 +44,12 @@ namespace TextmagicRest.Model
         /// </summary>
         public Country Country { get; set; }
 
-        [DeserializeAs(Name = "status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Dedicated number status
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public DedicatedNumberStatus Status
         {
             get { return (DedicatedNumberStatus)StatusChar; }

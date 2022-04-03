@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TextmagicRest.Model
+﻿namespace TextmagicRest.Model
 {
     /// <summary>
     /// Base class for TextMagic REST API resources

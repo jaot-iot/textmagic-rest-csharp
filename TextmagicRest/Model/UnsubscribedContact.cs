@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -11,7 +7,7 @@ namespace TextmagicRest.Model
     /// Unsubscribed contact class. Note that it isn't ordinary Contact; i.e. ID of Contact and UsubscribedContact
     /// (if you unsubscribe it) WOULD NOT equal
     /// </summary>
-    public class UnsubscribedContact: BaseModel
+    public class UnsubscribedContact : BaseModel
     {
         /// <summary>
         /// Unsubscribed contact ID
@@ -36,7 +32,7 @@ namespace TextmagicRest.Model
         /// <summary>
         /// Time when contact unsubscribed from your lists
         /// </summary>
-        [DeserializeAs(Name="unsubscribe_time")]
+        [JsonPropertyName("unsubscribe_time")]
         public DateTime? UnsubscribedAt { get; set; }
     }
 }

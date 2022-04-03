@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using TextmagicRest.Model;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using RestSharp;
-using System.Text;
-using RestSharp.Deserializers;
+using System;
+using System.Threading.Tasks;
+using TextmagicRest.Model;
 
 namespace TextmagicRest.Tests
 {
@@ -56,18 +54,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSingleMessage()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<Message>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new Message());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<Message>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new Message()));
             var client = mockClient.Object;
 
             client.GetMessage(messageId);
 
-            mockClient.Verify(trc => trc.Execute<Message>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<Message>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
 
@@ -100,21 +98,21 @@ namespace TextmagicRest.Tests
             var page = 2;
             var limit = 3;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new MessagesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new MessagesResult()));
             var client = mockClient.Object;
 
             client.GetMessages(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
                 + "{ \"id\": 49575710, \"receiver\": \"999123456\", \"messageTime\": \"2015-05-25T06:40:45+0000\", \"status\": \"q\","
@@ -143,7 +141,7 @@ namespace TextmagicRest.Tests
             Assert.AreEqual(limit, messages.Limit);
             Assert.AreEqual(3, messages.PageCount);
             Assert.IsTrue(messages.Messages[1].Success);
-            Assert.AreEqual(messageId+1, messages.Messages[1].Id);
+            Assert.AreEqual(messageId + 1, messages.Messages[1].Id);
             Assert.AreEqual(DeliveryStatus.Acked, messages.Messages[1].Status);
             Assert.AreEqual(messageSender, messages.Messages[1].Sender);
             Assert.AreEqual(messageReceiver, messages.Messages[1].Receiver);
@@ -153,17 +151,17 @@ namespace TextmagicRest.Tests
             Assert.AreEqual(messagePartsCount, messages.Messages[1].PartsCount);
             Assert.AreEqual("Albert", messages.Messages[1].FirstName);
             Assert.IsNull(messages.Messages[1].LastName);
-            
+
             Assert.AreEqual(DeliveryStatus.Delivered, messages.Messages[2].Status);
         }
 
         [Test]
         public void ShouldDeleteMessage()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var message = new Message()
@@ -173,12 +171,12 @@ namespace TextmagicRest.Tests
 
             client.DeleteMessage(message);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(messageId.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -193,18 +191,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSingleReply()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<Reply>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new Reply());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<Reply>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new Reply()));
             var client = mockClient.Object;
 
             client.GetReply(replyId);
 
-            mockClient.Verify(trc => trc.Execute<Reply>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<Reply>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("replies/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{ \"id\": 5946228, \"receiver\": \"447624800500\", \"messageTime\": \"2015-05-25T06:45:45+0000\","
@@ -220,7 +218,7 @@ namespace TextmagicRest.Tests
             Assert.AreEqual(replySender, reply.Sender);
             Assert.AreEqual(replyReceiver, reply.Receiver);
             Assert.AreEqual(replyTime.ToLocalTime(), reply.MessageTime);
-            Assert.AreEqual(replyText, reply.Text);          
+            Assert.AreEqual(replyText, reply.Text);
         }
 
         [Test]
@@ -229,21 +227,21 @@ namespace TextmagicRest.Tests
             var page = 2;
             var limit = 3;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<RepliesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new RepliesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<RepliesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new RepliesResult()));
             var client = mockClient.Object;
 
             client.GetReplies(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<RepliesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<RepliesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("replies", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
                 + "{ \"id\": 5946228, \"receiver\": \"447624800500\", \"messageTime\": \"2015-05-25T06:45:45+0000\","
@@ -251,7 +249,7 @@ namespace TextmagicRest.Tests
 
                 + "{ \"id\": 5946229, \"receiver\": \"447624800500\", \"messageTime\": \"2015-05-25T06:45:46+0000\","
                 + "\"text\": \"Test C# API reply 2\", \"sender\": \"999123456\" }"
-                
+
                 + "] }";
 
             var testClient = Common.CreateClient<RepliesResult>(content, null, null);
@@ -272,10 +270,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldDeleteReply()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var reply = new Reply()
@@ -285,12 +283,12 @@ namespace TextmagicRest.Tests
 
             client.DeleteReply(reply);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("replies/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(replyId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(replyId.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -305,18 +303,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSingleSchedule()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<Schedule>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new Schedule());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<Schedule>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new Schedule()));
             var client = mockClient.Object;
 
             client.GetSchedule(scheduleId);
 
-            mockClient.Verify(trc => trc.Execute<Schedule>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<Schedule>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("schedules/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{\"id\":4466,\"nextSend\":\"2015-05-08T13:18:38+0000\",\"rrule\":null"
@@ -335,28 +333,28 @@ namespace TextmagicRest.Tests
             Assert.IsNotNull(schedule.Session);
             Assert.AreEqual(sessionReferenceId, schedule.Session.ReferenceId);
         }
-        
+
         [Test]
         public void ShouldGetAllSchedules()
         {
             var page = 2;
             var limit = 3;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SchedulesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SchedulesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SchedulesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SchedulesResult()));
             var client = mockClient.Object;
 
             client.GetSchedules(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<SchedulesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SchedulesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("schedules", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
                 + "{\"id\":4466,\"nextSend\":\"2015-05-08T13:18:38+0000\",\"rrule\":null"
@@ -386,22 +384,22 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldDeleteSchedule()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var schedule = new Schedule() { Id = scheduleId };
 
             client.DeleteSchedule(schedule);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("schedules/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(scheduleId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(scheduleId.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -416,18 +414,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSingleSession()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<Session>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new Session());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<Session>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new Session()));
             var client = mockClient.Object;
 
             client.GetSession(sessionId);
 
-            mockClient.Verify(trc => trc.Execute<Session>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<Session>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("sessions/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{\"id\":34436259,\"startTime\":\"2015-05-08T13:18:38+0000\",\"text\":\"SCHEDULED API TEST\",\"source\":\"A\","
@@ -451,22 +449,22 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldDeleteSession()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var session = new Session() { Id = sessionId };
 
             client.DeleteSession(session);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("sessions/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(sessionId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(sessionId.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -484,22 +482,22 @@ namespace TextmagicRest.Tests
             var page = 2;
             var limit = 3;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new MessagesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new MessagesResult()));
             var client = mockClient.Object;
 
             client.GetSessionMessages(sessionId, page, limit);
 
-            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("sessions/{id}/messages", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
-            Assert.AreEqual(sessionId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(sessionId.ToString(), savedRequest.Parameters.TryFind("id").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 1, \"resources\": ["
                 + "{ \"id\": 782, \"receiver\": \"999123456\", \"messageTime\": \"2015-05-25T06:40:45+0000\", \"status\": \"q\","
@@ -526,20 +524,20 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetAllSessions()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SessionsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SessionsResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SessionsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SessionsResult()));
             var client = mockClient.Object;
             int page = 2;
             int limit = 3;
 
             client.GetSessions(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<SessionsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SessionsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("sessions", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
@@ -571,20 +569,20 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetAllChats()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<ChatsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new ChatsResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<ChatsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new ChatsResult()));
             var client = mockClient.Object;
             int page = 2;
             int limit = 3;
 
             client.GetChats(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<ChatsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<ChatsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("chats", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{\"page\":2,\"limit\":3,\"pageCount\":3,\"resources\":["
@@ -609,10 +607,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSingleChat()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<ChatMessagesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new ChatMessagesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<ChatMessagesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new ChatMessagesResult()));
             var client = mockClient.Object;
             string phone = "999123456";
             int page = 2;
@@ -620,10 +618,10 @@ namespace TextmagicRest.Tests
 
             client.GetChat(phone, page, limit);
 
-            mockClient.Verify(trc => trc.Execute<ChatMessagesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<ChatMessagesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("chats/{phone}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
 
             var content = "{\"page\":2,\"limit\":3,\"pageCount\":3,\"resources\":["
@@ -649,20 +647,20 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetAllBulks()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<BulkSessionsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new BulkSessionsResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<BulkSessionsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new BulkSessionsResult()));
             var client = mockClient.Object;
             int page = 2;
             int limit = 3;
 
             client.GetBulkSessions(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<BulkSessionsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<BulkSessionsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("bulks", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{\"page\":2,\"limit\":3,\"pageCount\":2,\"resources\":["
@@ -694,21 +692,21 @@ namespace TextmagicRest.Tests
             int sessionId = 1;
             string query = "my_query";
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new MessagesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new MessagesResult()));
             var client = mockClient.Object;
 
             client.SearchMessages(page, limit, ids, sessionId, query);
 
-            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<MessagesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages/search", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(5, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 1, \"resources\": ["
                 + "{ \"id\": 782, \"receiver\": \"999123456\", \"messageTime\": \"2015-05-25T06:40:45+0000\", \"status\": \"q\","
@@ -735,19 +733,19 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetBulkMessageSessionStatus()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<BulkSession>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new BulkSession());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<BulkSession>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new BulkSession()));
             var client = mockClient.Object;
 
             int id = 4577;
             client.GetBulkSessionStatus(id);
 
-            mockClient.Verify(trc => trc.Execute<BulkSession>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<BulkSession>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("bulks/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{\"id\":4577,\"status\":\"c\",\"itemsProcessed\":9937,\"itemsTotal\":9937,\"createdAt\":\"2014-12-14T04:34:46+0000\",\"session\":{\"id\":34419457,\"startTime\":\"2014-12-14T04:34:53+0000\",\"text\":\"test\",\"source\":\"O\",\"referenceId\":\"O_tester_098f6bcd4621d373cade4e832627b4f6_1414151612548d136b600eb4.33276307\",\"price\":393.712,\"numbersCount\":9937},\"text\":\"test\"}";
@@ -770,21 +768,21 @@ namespace TextmagicRest.Tests
             int[] ids = { 5946228 };
             string query = "my_query";
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<RepliesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new RepliesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<RepliesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new RepliesResult()));
             var client = mockClient.Object;
 
             client.SearchReplies(page, limit, ids, query);
 
-            mockClient.Verify(trc => trc.Execute<RepliesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<RepliesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("replies/search", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(4, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 1, \"resources\": ["
                 + "{ \"id\": 5946228, \"receiver\": \"447624800500\", \"messageTime\": \"2015-05-25T06:45:45+0000\","
@@ -809,10 +807,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetPrice()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<Pricing>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new Pricing());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<Pricing>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new Pricing()));
             var client = mockClient.Object;
 
             int[] contactIds = { 321 };
@@ -828,10 +826,10 @@ namespace TextmagicRest.Tests
 
             client.GetPrice(sendingOptions);
 
-            mockClient.Verify(trc => trc.Execute<Pricing>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<Pricing>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages/price", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(5, savedRequest.Parameters.Count);
 
             var content = "{ \"total\": 0.056, \"parts\": 1, \"countries\": { \"CH\": {"
@@ -853,10 +851,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldSendMessage()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             int[] contactIds = { 321 };
@@ -872,10 +870,10 @@ namespace TextmagicRest.Tests
 
             client.SendMessage(sendingOptions);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(4, savedRequest.Parameters.Count);
 
             var content = "{ \"type\": \"session\", \"sessionId\": 1, \"bulkId\": 2,"
@@ -897,50 +895,50 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldSendSimpleMessageToOnePhone()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var link = client.SendMessage(messageText, messageReceiver);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageText, savedRequest.Parameters.Find(x => x.Name == "text").Value);
-            Assert.AreEqual(messageReceiver, savedRequest.Parameters.Find(x => x.Name == "phones").Value);
+            Assert.AreEqual(messageText, savedRequest.Parameters.TryFind("text").Value);
+            Assert.AreEqual(messageReceiver, savedRequest.Parameters.TryFind("phones").Value);
         }
 
         [Test]
         public void ShouldSendSimpleMessageToArrayOfPhones()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var link = client.SendMessage(messageText, messageReceivers);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageText, savedRequest.Parameters.Find(x => x.Name == "text").Value);
-            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.Find(x => x.Name == "phones").Value);
+            Assert.AreEqual(messageText, savedRequest.Parameters.TryFind("text").Value);
+            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.TryFind("phones").Value);
         }
 
         [Test]
         public void ShouldSendMessageToArrayOfPhonesInComplexOptions()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var options = new SendingOptions
@@ -950,22 +948,22 @@ namespace TextmagicRest.Tests
             };
             var link = client.SendMessage(options);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageText, savedRequest.Parameters.Find(x => x.Name == "text").Value);
-            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.Find(x => x.Name == "phones").Value);
+            Assert.AreEqual(messageText, savedRequest.Parameters.TryFind("text").Value);
+            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.TryFind("phones").Value);
         }
 
         [Test]
         public void ShouldSendScheduledMessage()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var options = new SendingOptions
@@ -976,14 +974,14 @@ namespace TextmagicRest.Tests
             };
             var link = client.SendMessage(options);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageText, savedRequest.Parameters.Find(x => x.Name == "text").Value);
-            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.Find(x => x.Name == "phones").Value);
-            Assert.AreEqual(Client.DateTimeToTimestamp(messageTime).ToString(), savedRequest.Parameters.Find(x => x.Name == "sendingTime").Value);
+            Assert.AreEqual(messageText, savedRequest.Parameters.TryFind("text").Value);
+            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.TryFind("phones").Value);
+            Assert.AreEqual(Client.DateTimeToTimestamp(messageTime).ToString(), savedRequest.Parameters.TryFind("sendingTime").Value);
         }
 
         [Test]
@@ -992,10 +990,10 @@ namespace TextmagicRest.Tests
             int[] contactIds = { 385, 15 };
             int[] listIds = { 424, 454, 223 };
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var options = new SendingOptions
@@ -1013,21 +1011,21 @@ namespace TextmagicRest.Tests
             };
             var link = client.SendMessage(options);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(10, savedRequest.Parameters.Count);
-            Assert.AreEqual(messageText, savedRequest.Parameters.Find(x => x.Name == "text").Value);
-            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.Find(x => x.Name == "phones").Value);
-            Assert.AreEqual(string.Join(",", contactIds), savedRequest.Parameters.Find(x => x.Name == "contacts").Value);
-            Assert.AreEqual(string.Join(",", listIds), savedRequest.Parameters.Find(x => x.Name == "lists").Value);
-            Assert.AreEqual(Client.DateTimeToTimestamp(messageTime).ToString(), savedRequest.Parameters.Find(x => x.Name == "sendingTime").Value);
-            Assert.AreEqual(messageSender, savedRequest.Parameters.Find(x => x.Name == "from").Value);
-            Assert.AreEqual(messageCutExtra ? "1" : "0", savedRequest.Parameters.Find(x => x.Name == "cutExtra").Value);
-            Assert.AreEqual(messagePartsCount.ToString(), savedRequest.Parameters.Find(x => x.Name == "partsCount").Value);
-            Assert.AreEqual(sessionReferenceId, savedRequest.Parameters.Find(x => x.Name == "referenceId").Value);
-            Assert.AreEqual(messageRrule, savedRequest.Parameters.Find(x => x.Name == "rrule").Value);
+            Assert.AreEqual(messageText, savedRequest.Parameters.TryFind("text").Value);
+            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.TryFind("phones").Value);
+            Assert.AreEqual(string.Join(",", contactIds), savedRequest.Parameters.TryFind("contacts").Value);
+            Assert.AreEqual(string.Join(",", listIds), savedRequest.Parameters.TryFind("lists").Value);
+            Assert.AreEqual(Client.DateTimeToTimestamp(messageTime).ToString(), savedRequest.Parameters.TryFind("sendingTime").Value);
+            Assert.AreEqual(messageSender, savedRequest.Parameters.TryFind("from").Value);
+            Assert.AreEqual(messageCutExtra ? "1" : "0", savedRequest.Parameters.TryFind("cutExtra").Value);
+            Assert.AreEqual(messagePartsCount.ToString(), savedRequest.Parameters.TryFind("partsCount").Value);
+            Assert.AreEqual(sessionReferenceId, savedRequest.Parameters.TryFind("referenceId").Value);
+            Assert.AreEqual(messageRrule, savedRequest.Parameters.TryFind("rrule").Value);
         }
 
         [Test]
@@ -1035,10 +1033,10 @@ namespace TextmagicRest.Tests
         {
             var templateId = 318;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SendingResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SendingResult()));
             var client = mockClient.Object;
 
             var options = new SendingOptions
@@ -1048,13 +1046,13 @@ namespace TextmagicRest.Tests
             };
             var link = client.SendMessage(options);
 
-            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SendingResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("messages", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.Find(x => x.Name == "phones").Value);
-            Assert.AreEqual(templateId.ToString(), savedRequest.Parameters.Find(x => x.Name == "templateId").Value);
+            Assert.AreEqual(string.Join(",", messageReceivers), savedRequest.Parameters.TryFind("phones").Value);
+            Assert.AreEqual(templateId.ToString(), savedRequest.Parameters.TryFind("templateId").Value);
         }
     }
 }

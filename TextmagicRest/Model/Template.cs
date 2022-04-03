@@ -5,7 +5,7 @@ namespace TextmagicRest.Model
     /// <summary>
     /// Message template class
     /// </summary>
-    public class Template: BaseModel
+    public class Template : BaseModel
     {
         /// <summary>
         /// Template ID

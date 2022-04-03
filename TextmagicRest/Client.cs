@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RestSharp;
+using RestSharp.Authenticators;
+using System;
 using System.Text;
 using System.Threading.Tasks;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
-using TextmagicRest.Model;
-using RestSharp.Validation;
-using RestSharp.Extensions;
 
 namespace TextmagicRest
 {
@@ -37,7 +31,7 @@ namespace TextmagicRest
         /// <summary>
         /// HTTP client instance
         /// </summary>
-        protected IRestClient _client;
+        protected RestClient _client;
 
         /// <summary>
         /// Last request time (to not to exceed maximum 2 requests per second)
@@ -45,20 +39,6 @@ namespace TextmagicRest
         protected DateTime _lastExecuted;
 
         private const string _defaultUserAgent = "textmagic-rest-csharp/{0} (.NET {1}; {2})";
-
-        protected void _init(string username, string token, string baseUrl, int timeout)
-        {
-            Username = username;
-            Token = token;
-            BaseUrl = baseUrl;
-
-            _client.BaseUrl = new Uri(baseUrl);
-            _client.Timeout = timeout;
-            _client.AddDefaultHeader("Accept-Charset", "utf-8");
-            _client.Authenticator = (IAuthenticator)new TextmagicAuthenticator(Username, Token);
-            System.Reflection.AssemblyName assemblyName = new System.Reflection.AssemblyName(System.Reflection.Assembly.GetExecutingAssembly().FullName);
-            _client.UserAgent = String.Format(_defaultUserAgent, assemblyName.Version, Environment.Version.ToString(), Environment.OSVersion.ToString());
-        }
 
         /// <summary>
         /// Initialize TextMagic REST client instance
@@ -69,15 +49,28 @@ namespace TextmagicRest
         /// <param name="timeout">Request timeout</param>
         public Client(string username, string token, string baseUrl, int timeout)
         {
-            _client = new RestClient();
-            _init(username, token, baseUrl, timeout);
+            Username = username;
+            Token = token;
+            BaseUrl = baseUrl;
+
+            System.Reflection.AssemblyName assemblyName = new System.Reflection.AssemblyName(System.Reflection.Assembly.GetExecutingAssembly().FullName);
+
+            RestClientOptions opts = new(baseUrl)
+            {
+                Timeout = timeout,
+                UserAgent = String.Format(_defaultUserAgent, assemblyName.Version, Environment.Version.ToString(), Environment.OSVersion.ToString()),
+            };
+
+            _client = new RestClient(opts);
+            _client.AddDefaultHeader("Accept-Charset", "utf-8");
+            _client.Authenticator = (IAuthenticator)new TextmagicAuthenticator(Username, Token);
         }
 
         /// <summary>
         /// Initialize TextMagic REST client instance with special instance of RestClient
         /// </summary>
         /// <param name="client">RestClient instance</param>
-        public Client(IRestClient client)
+        public Client(RestClient client)
         {
             _client = client;
         }
@@ -124,7 +117,7 @@ namespace TextmagicRest
         /// </summary>
         /// <typeparam name="T">The type of object to create and populate with the returned data.</typeparam>
         /// <param name="request">The RestRequest to execute (will use client credentials)</param>
-        public virtual T Execute<T>(IRestRequest request) where T : new()
+        public virtual async Task<T> Execute<T>(RestRequest request) where T : new()
         {
             checkExecutionTime();
             request.OnBeforeDeserialization = (resp) =>
@@ -133,27 +126,32 @@ namespace TextmagicRest
                 if (((int)resp.StatusCode) >= 400)
                 {
                     string clientException = "{{ \"ClientException\" : {0} }}";
-                    var content = resp.RawBytes.AsString();
+                    var content = resp.Content;
                     var newJson = string.Format(clientException, content);
 
-                    resp.Content = null;
-                    resp.RawBytes = Encoding.UTF8.GetBytes(newJson.ToString());
+                    resp = new RestResponse()
+                    {
+                        Content = null,
+                        RawBytes = Encoding.UTF8.GetBytes(newJson.ToString())
+                    };
                 }
 
                 // if HTTP status code is 201 No content, add null ClientException to be success
                 if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    resp.ContentType = "application/json";
                     string clientException = "{{ \"ClientException\" : null }}";
-                    var content = resp.RawBytes.AsString();
+                    var content = resp.Content;
                     var newJson = string.Format(clientException, content);
-
-                    resp.Content = null;
-                    resp.RawBytes = Encoding.UTF8.GetBytes(newJson.ToString());
+                    resp = new RestResponse()
+                    {
+                        Content = null,
+                        RawBytes = Encoding.UTF8.GetBytes(newJson.ToString()),
+                        ContentType = "application/json"
+                    };
                 }
             };
 
-            var response = _client.Execute<T>(request);
+            var response = await _client.ExecuteAsync<T>(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
@@ -172,10 +170,10 @@ namespace TextmagicRest
         /// Execute a manual REST request
         /// </summary>
         /// <param name="request">The RestRequest to execute (will use client credentials)</param>
-        public virtual IRestResponse Execute(IRestRequest request)
+        public virtual async Task<RestResponse> Execute(RestRequest request)
         {
             checkExecutionTime();
-            return _client.Execute(request);
+            return await _client.ExecuteAsync(request);
         }
 
         /// <summary>

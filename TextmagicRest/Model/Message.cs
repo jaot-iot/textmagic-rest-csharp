@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -22,7 +18,7 @@ namespace TextmagicRest.Model
     /// <summary>
     /// TextMagic outbound message class
     /// </summary>
-    public class Message: BaseModel
+    public class Message : BaseModel
     {
         /// <summary>
         /// Message ID
@@ -44,16 +40,16 @@ namespace TextmagicRest.Model
         /// </summary>
         public string Receiver { get; set; }
 
-        [DeserializeAs(Name="status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Message delivery status
         /// </summary>
-        [DeserializeAs(Name="fake-unused-name")]
-        public DeliveryStatus Status 
+        [JsonPropertyName("fake-unused-name")]
+        public DeliveryStatus Status
         {
             get { return (DeliveryStatus)StatusChar; }
-            set { StatusChar = value.ToString()[0]; } 
+            set { StatusChar = value.ToString()[0]; }
         }
 
         /// <summary>
@@ -79,7 +75,7 @@ namespace TextmagicRest.Model
         /// <summary>
         /// Destination country 2-letter ISO code
         /// </summary>
-        [DeserializeAs(Name="country")]
+        [JsonPropertyName("country")]
         public string CountryId { get; set; }
 
         /// <summary>

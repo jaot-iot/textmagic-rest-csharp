@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using TextmagicRest.Model;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TextmagicRest.Model;
 
 namespace TextmagicRest.Tests
 {
@@ -46,18 +47,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetUser()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<User>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new User());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<User>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new User()));
             var client = mockClient.Object;
 
             client.GetUser();
 
-            mockClient.Verify(trc => trc.Execute<User>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<User>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("user", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(0, savedRequest.Parameters.Count);
 
             var content = "{\"id\": 12345, \"username\": \"api.test.user\", \"firstName\": \"Test\", \"lastName\": \"Api\",  \"status\": \"T\", \"balance\": 575.5,  \"company\": \"test company\","
@@ -89,26 +90,26 @@ namespace TextmagicRest.Tests
             const string newLastName = "name";
             const string newCompany = "and Company";
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new LinkResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new LinkResult()));
             var client = mockClient.Object;
 
             client.UpdateUser(newFirstName, newLastName, newCompany);
 
-            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("user", savedRequest.Resource);
-            Assert.AreEqual(Method.PUT, savedRequest.Method);
+            Assert.AreEqual(Method.Put, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
-            var firstName = savedRequest.Parameters.Find(x => x.Name == "firstName");
+            var firstName = savedRequest.Parameters.TryFind("firstName");
             Assert.IsNotNull(firstName);
             Assert.AreEqual(newFirstName, firstName.Value);
-            var lastName = savedRequest.Parameters.Find(x => x.Name == "lastName");
+            var lastName = savedRequest.Parameters.TryFind("lastName");
             Assert.IsNotNull(firstName);
             Assert.AreEqual(newLastName, lastName.Value);
-            var company = savedRequest.Parameters.Find(x => x.Name == "company");
+            var company = savedRequest.Parameters.TryFind("company");
             Assert.IsNotNull(firstName);
             Assert.AreEqual(newLastName, lastName.Value);
 
@@ -129,21 +130,21 @@ namespace TextmagicRest.Tests
             var page = 2;
             var limit = 3;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<InvoicesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new InvoicesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<InvoicesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new InvoicesResult()));
             var client = mockClient.Object;
 
             client.GetInvoices(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<InvoicesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<InvoicesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("invoices", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
                 + "{ \"id\": 49575710, \"bundle\": 200, \"currency\": \"USD\", \"vat\": 21.00,"
@@ -181,21 +182,21 @@ namespace TextmagicRest.Tests
             var dateTimeStart = DateTime.Now;
             var dateTimeStop = DateTime.Now;
 
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SpendingStatsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SpendingStatsResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SpendingStatsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SpendingStatsResult()));
             var client = mockClient.Object;
 
             client.GetSpendingStats(page, limit, dateTimeStart, dateTimeStop);
 
-            mockClient.Verify(trc => trc.Execute<SpendingStatsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SpendingStatsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("stats/spending", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(4, savedRequest.Parameters.Count);
-            Assert.AreEqual(page.ToString(), savedRequest.Parameters.Find(x => x.Name == "page").Value);
-            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.Find(x => x.Name == "limit").Value);
+            Assert.AreEqual(page.ToString(), savedRequest.Parameters.TryFind("page").Value);
+            Assert.AreEqual(limit.ToString(), savedRequest.Parameters.TryFind("limit").Value);
 
             var content = "{ \"page\": 2,  \"limit\": 3, \"pageCount\": 3, \"resources\": ["
                 + "{ \"id\": 49575710, \"date\": \"2014-09-19T00:00:00+0000\", \"balance\": 315.16, \"delta\": -0.15,"
@@ -228,7 +229,7 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetMessagingStats()
         {
-            IRestRequest savedRequest = null;
+            RestRequest savedRequest = null;
 
             var messaginStatsObject = new MessagingStats()
             {
@@ -248,19 +249,19 @@ namespace TextmagicRest.Tests
             var messagingStatsInitializer = new List<MessagingStats>();
             messagingStatsInitializer.Add(messaginStatsObject);
 
-            mockClient.Setup(trc => trc.Execute<MessagingStatsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new MessagingStatsResult() { MessagingStats = messagingStatsInitializer });
+            mockClient.Setup(trc => trc.Execute<MessagingStatsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new MessagingStatsResult() { MessagingStats = messagingStatsInitializer }));
             var client = mockClient.Object;
 
             client.GetMessagingStats(MessagingStatsGroupBy.Month, DateTime.Now, DateTime.Today);
 
-            mockClient.Verify(trc => trc.Execute<MessagingStatsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<MessagingStatsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("stats/messaging", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
-            Assert.AreEqual("month", savedRequest.Parameters.Find(x => x.Name == "by").Value);
+            Assert.AreEqual("month", savedRequest.Parameters.TryFind("by").Value);
 
             var content = "{ \"resources\": ["
                 + "{ \"replyRate\": 0.32, \"date\": null, \"deliveryRate\": 0.95, \"costs\": 21.00,  \"messagesReceived\": 1085,"
@@ -289,10 +290,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldDeleteSenderId()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var senderIdToDelete = new SenderId()
@@ -302,12 +303,12 @@ namespace TextmagicRest.Tests
 
             client.DeleteSenderId(senderIdToDelete);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("senderids/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(senderId.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(senderId.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -322,10 +323,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldCreateSenderId()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new LinkResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new LinkResult()));
             var client = mockClient.Object;
 
             string senderIdToCreate = "senderIdToCreate";
@@ -333,12 +334,12 @@ namespace TextmagicRest.Tests
 
             client.CreateSenderId(senderIdToCreate, explanation);
 
-            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("senderids", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(senderIdToCreate, savedRequest.Parameters.Find(x => x.Name == "senderId").Value);
+            Assert.AreEqual(senderIdToCreate, savedRequest.Parameters.TryFind("senderId").Value);
 
             var content = "{ \"id\": \"31337\", \"href\": \"/api/v2/senderids/31337\"}";
 
@@ -355,22 +356,22 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetAvailableSendingSources()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SourcesResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SourcesResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SourcesResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SourcesResult()));
             var client = mockClient.Object;
 
             string country = "US";
 
             var sourcesResult = client.GetAvailableSendingSources(country);
 
-            mockClient.Verify(trc => trc.Execute<SourcesResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SourcesResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("sources", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(country, savedRequest.Parameters.Find(x => x.Name == "country").Value);
+            Assert.AreEqual(country, savedRequest.Parameters.TryFind("country").Value);
 
             var content = "{ \"dedicated\": null, \"user\": [], \"shared\": [\"12345\",\"390866\"], \"senderIds\": null }";
 
@@ -389,10 +390,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldFindAvailableDedicatedNumbers()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<AvailableNumbersResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new AvailableNumbersResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<AvailableNumbersResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new AvailableNumbersResult()));
             var client = mockClient.Object;
 
             string country = "US";
@@ -400,13 +401,13 @@ namespace TextmagicRest.Tests
 
             client.FindAvailableDedicatedNumbers(country, prefix);
 
-            mockClient.Verify(trc => trc.Execute<AvailableNumbersResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<AvailableNumbersResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("numbers/available", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
-            Assert.AreEqual(country, savedRequest.Parameters.Find(x => x.Name == "country").Value);
-            Assert.AreEqual(prefix, savedRequest.Parameters.Find(x => x.Name == "prefix").Value);
+            Assert.AreEqual(country, savedRequest.Parameters.TryFind("country").Value);
+            Assert.AreEqual(prefix, savedRequest.Parameters.TryFind("prefix").Value);
 
             var content = "{ \"numbers\": [ \"12345677\", \"35788978\" ], \"price\": 3 }";
 
@@ -424,18 +425,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetDedicatedNumbers()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DedicatedNumbersResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DedicatedNumbersResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DedicatedNumbersResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DedicatedNumbersResult()));
             var client = mockClient.Object;
 
             client.GetDedicatedNumbers();
 
-            mockClient.Verify(trc => trc.Execute<DedicatedNumbersResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DedicatedNumbersResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("numbers", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(0, savedRequest.Parameters.Count);
 
             var content = "{ \"page\": 1, \"limit\": 1, \"pageCount\": 1, \"resources\": [ { \"id\": 1, \"phone\": \"3435657\", \"country\": null, \"status\": \"A\", \"purchasedAt\": null, \"expireAt\": null, \"user\": null } ] }";
@@ -458,22 +459,22 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldCancelDedicatedNumber()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             var DedicatedNumberToCancel = new DedicatedNumber() { Id = 12345 };
             client.CancelDedicatedNumber(DedicatedNumberToCancel);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("numbers/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(DedicatedNumberToCancel.Id.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
-            
+            Assert.AreEqual(DedicatedNumberToCancel.Id.ToString(), savedRequest.Parameters.TryFind("id").Value);
+
             var content = "{}";
 
             var testClient = Common.CreateClient<DeleteResult>(content, null, null);
@@ -487,10 +488,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldBuyDedicatedNumber()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new LinkResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new LinkResult()));
             var client = mockClient.Object;
 
             string phone = "0345233412";
@@ -499,14 +500,14 @@ namespace TextmagicRest.Tests
 
             client.BuyDedicatedNumber(phone, country, userId);
 
-            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("numbers", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(3, savedRequest.Parameters.Count);
-            Assert.AreEqual(phone, savedRequest.Parameters.Find(x => x.Name == "phone").Value);
-            Assert.AreEqual(country, savedRequest.Parameters.Find(x => x.Name == "country").Value);
-            Assert.AreEqual(userId, savedRequest.Parameters.Find(x => x.Name == "userId").Value);
+            Assert.AreEqual(phone, savedRequest.Parameters.TryFind("phone").Value);
+            Assert.AreEqual(country, savedRequest.Parameters.TryFind("country").Value);
+            Assert.AreEqual(userId, savedRequest.Parameters.TryFind("userId").Value);
 
             var content = "{ \"id\": \"31337\", \"href\": \"/api/v2/numbers/31337\"}";
 
@@ -523,19 +524,19 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetDedicatedNumber()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DedicatedNumber>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DedicatedNumber());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DedicatedNumber>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DedicatedNumber()));
             var client = mockClient.Object;
 
             int dedicatedNumberId = 12334;
             client.GetDedicatedNumber(dedicatedNumberId);
 
-            mockClient.Verify(trc => trc.Execute<DedicatedNumber>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DedicatedNumber>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("numbers/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{ \"id\": 1, \"phone\": \"3435657\", \"country\": null, \"status\": \"A\", \"purchasedAt\": null, \"expireAt\": null, \"user\": null }";
@@ -558,18 +559,18 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSenderId()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SenderId>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SenderId());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SenderId>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SenderId()));
             var client = mockClient.Object;
 
             client.GetSenderId(senderId);
 
-            mockClient.Verify(trc => trc.Execute<SenderId>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SenderId>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("senderids/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
 
@@ -590,20 +591,20 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSenderIds()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<SenderIdsResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new SenderIdsResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<SenderIdsResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new SenderIdsResult()));
             var client = mockClient.Object;
 
             int page = 1;
             int limit = 1;
             client.GetSenderIds(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<SenderIdsResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<SenderIdsResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("senderids", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{ \"page\": 1, \"limit\": 1, \"pageCount\": 1, \"resources\": [ { \"Id\": 37, \"senderId\": \"NameOfSenderId\", \"status\": \"A\", \"user\": null } ] }";
@@ -621,24 +622,24 @@ namespace TextmagicRest.Tests
             Assert.AreEqual("NameOfSenderId", resultSenderIds.SenderIds[0].Name);
             Assert.AreEqual(SenderIdStatus.Active, resultSenderIds.SenderIds[0].Status);
             Assert.AreEqual(null, resultSenderIds.SenderIds[0].User);
-        }        
+        }
 
         [Test]
         public void ShouldGetSingleSubaccount()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<User>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new User());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<User>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new User()));
             var client = mockClient.Object;
 
             int Id = 12345;
             client.GetSingleSubaccount(Id);
 
-            mockClient.Verify(trc => trc.Execute<User>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<User>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("subaccounts/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
 
             var content = "{\"id\": 12345, \"username\": \"api.test.user\", \"firstName\": \"Test\", \"lastName\": \"Api\",  \"status\": \"T\", \"balance\": 575.5,  \"company\": \"test company\","
@@ -666,21 +667,21 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldCloseSubaccount()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new DeleteResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new DeleteResult()));
             var client = mockClient.Object;
 
             int Id = 12345;
             client.CloseSubaccount(Id);
 
-            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<DeleteResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("subaccounts/{id}", savedRequest.Resource);
-            Assert.AreEqual(Method.DELETE, savedRequest.Method);
+            Assert.AreEqual(Method.Delete, savedRequest.Method);
             Assert.AreEqual(1, savedRequest.Parameters.Count);
-            Assert.AreEqual(Id.ToString(), savedRequest.Parameters.Find(x => x.Name == "id").Value);
+            Assert.AreEqual(Id.ToString(), savedRequest.Parameters.TryFind("id").Value);
 
             var content = "{}";
 
@@ -695,20 +696,20 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldGetSubAccounts()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<UserResults>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new UserResults());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<UserResults>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new UserResults()));
             var client = mockClient.Object;
 
             int page = 1;
             int limit = 1;
             client.GetSubAccounts(page, limit);
 
-            mockClient.Verify(trc => trc.Execute<UserResults>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<UserResults>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("subaccounts", savedRequest.Resource);
-            Assert.AreEqual(Method.GET, savedRequest.Method);
+            Assert.AreEqual(Method.Get, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{ \"page\": 1, \"limit\": 1, \"pageCount\": 1, \"resources\": [ {\"id\": 12345, \"username\": \"api.test.user\", \"firstName\": \"Test\", \"lastName\": \"Api\",  \"status\": \"T\", \"balance\": 575.5,  \"company\": \"test company\", \"currency\": { \"id\": \"EUR\", \"htmlSymbol\": null }, \"timezone\": null, \"subaccountType\": \"P\"} ] }";
@@ -730,10 +731,10 @@ namespace TextmagicRest.Tests
         [Test]
         public void ShouldInviteSubAccount()
         {
-            IRestRequest savedRequest = null;
-            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()))
-                .Callback<IRestRequest>((request) => savedRequest = request)
-                .Returns(new LinkResult());
+            RestRequest savedRequest = null;
+            mockClient.Setup(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()))
+                .Callback<RestRequest>((request) => savedRequest = request)
+                .Returns(Task.FromResult(new LinkResult()));
             var client = mockClient.Object;
 
             string email = "test@company.com";
@@ -741,10 +742,10 @@ namespace TextmagicRest.Tests
 
             client.InviteSubAccount(email, role);
 
-            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<IRestRequest>()), Times.Once);
+            mockClient.Verify(trc => trc.Execute<LinkResult>(It.IsAny<RestRequest>()), Times.Once);
             Assert.IsNotNull(savedRequest);
             Assert.AreEqual("subaccounts", savedRequest.Resource);
-            Assert.AreEqual(Method.POST, savedRequest.Method);
+            Assert.AreEqual(Method.Post, savedRequest.Method);
             Assert.AreEqual(2, savedRequest.Parameters.Count);
 
             var content = "{}";

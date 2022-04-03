@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TextmagicRest.Model
+﻿namespace TextmagicRest.Model
 {
     /// <summary>
     /// TextMagic contact list class
     /// </summary>
-    public class ContactList: BaseModel
+    public class ContactList : BaseModel
     {
         /// <summary>
         /// List ID

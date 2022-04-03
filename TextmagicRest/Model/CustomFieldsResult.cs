@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp.Deserializers;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TextmagicRest.Model
 {
@@ -12,7 +8,7 @@ namespace TextmagicRest.Model
     /// </summary>
     public class CustomFieldsResult
     {
-        [DeserializeAs(Name = "resources")]
+        [JsonPropertyName("resources")]
         public List<CustomField> CustomFields { get; set; }
     }
 }

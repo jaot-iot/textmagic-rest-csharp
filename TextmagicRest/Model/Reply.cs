@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TextmagicRest.Model
 {
     /// <summary>
     /// Inbound message class
     /// </summary>
-    public class Reply: BaseModel
+    public class Reply : BaseModel
     {
         /// <summary>
         /// Inbound message ID

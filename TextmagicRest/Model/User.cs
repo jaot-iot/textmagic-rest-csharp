@@ -1,5 +1,5 @@
-﻿using System;
-using RestSharp.Deserializers;
+﻿using System.Text.Json.Serialization;
+
 
 namespace TextmagicRest.Model
 {
@@ -19,7 +19,7 @@ namespace TextmagicRest.Model
     /// <summary>
     /// User account representation class
     /// </summary>
-    public class User: BaseModel
+    public class User : BaseModel
     {
         /// <summary>
         /// User ID
@@ -46,12 +46,12 @@ namespace TextmagicRest.Model
         /// </summary>
         public virtual string Name { get { return FirstName + " " + LastName; } }
 
-        [DeserializeAs(Name = "status")]
+        [JsonPropertyName("status")]
         public char StatusChar { get; set; }
         /// <summary>
         /// Current Account Status
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public AccountStatus Status
         {
             get { return (AccountStatus)StatusChar; }
@@ -72,18 +72,18 @@ namespace TextmagicRest.Model
         /// Account currency
         /// </summary>
         public Currency Currency { get; set; }
-        
+
         /// <summary>
         /// Account timezone
         /// </summary>
         public Timezone Timezone { get; set; }
 
-        [DeserializeAs(Name = "subaccountType")]
+        [JsonPropertyName("subaccountType")]
         public char AccountChar { get; set; }
         /// <summary>
         /// Type of Account
         /// </summary>
-        [DeserializeAs(Name = "fake-unused-name")]
+        [JsonPropertyName("fake-unused-name")]
         public SubAccountType SubaccountType
         {
             get { return (SubAccountType)AccountChar; }
