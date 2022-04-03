@@ -1,4 +1,4 @@
-# Textmagic:: Rest C# Wrapper
+# Textmagic:: Rest C# Wrapper - - - Porting to .NetCore\.Net Framework 6.0.x
 
 Welcome to your new textmagic-rest-csharp wrapper! This library provides you with an easy solution to send SMS and receive replies by integrating [TextMagic](www.textmagic.com) SMS Gateway to your C# / .NET application. 
 
